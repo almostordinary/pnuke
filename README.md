@@ -86,20 +86,49 @@ pnuke
 
 ## 🚀 Installation
 
-### Using Cargo
+### 🦀 Cargo (Rust)
 ```bash
 cargo install pnuke
 ```
 
-### From GitHub Releases (Pre-built Binaries)
-Download the pre-compiled binary for macOS (Apple Silicon / Intel), Linux (x86_64 / arm64), or Windows from [GitHub Releases](https://github.com/almostordinary/pnuke/releases).
-
+### 📦 npm / npx (Node.js & Frontend)
 ```bash
-# macOS / Linux one-liner
-curl -fsSL https://raw.githubusercontent.com/almostordinary/pnuke/main/install.sh | sh
+# Run instantly with zero install:
+npx pnuke 3000
+
+# Or install globally:
+npm install -g pnuke
+pnpm add -g pnuke
+bun add -g pnuke
 ```
 
-*(npm / npx and Homebrew packages coming soon!)*
+### 🐍 uv & pip (Python)
+```bash
+# Run instantly via uv:
+uvx pnuke 3000
+
+# Or install tool:
+uv tool install pnuke
+pip install pnuke
+```
+
+### 🐧 Arch Linux (pacman / AUR)
+```bash
+yay -S pnuke-bin
+# or
+paru -S pnuke-bin
+```
+
+### 🐧 Debian / Ubuntu (.deb)
+Download the `.deb` package from [GitHub Releases](https://github.com/almostordinary/pnuke/releases):
+```bash
+sudo apt install ./pnuke_amd64.deb
+```
+
+### ⚡ One-Liner (macOS & Linux)
+```bash
+curl -fsSL https://raw.githubusercontent.com/almostordinary/pnuke/main/install.sh | sh
+```
 
 ---
 

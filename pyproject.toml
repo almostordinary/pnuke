@@ -1,0 +1,31 @@
+[build-system]
+requires = ["maturin>=1.5,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "pnuke"
+version = "0.1.1"
+description = "⚡ The sub-millisecond port killer and listener cockpit for developers."
+readme = "README.md"
+authors = [
+    { name = "Almost Ordinary", email = "hello@almostordinary.dev" },
+    { name = "Parth Gorde", email = "parth@almostordinary.dev" }
+]
+license = { text = "MIT OR Apache-2.0" }
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Rust",
+    "Topic :: System :: Networking",
+    "Topic :: Utilities",
+    "Environment :: Console",
+]
+keywords = ["cli", "port", "kill", "tui", "network", "dev-tools"]
+
+[project.urls]
+Homepage = "https://github.com/almostordinary/pnuke"
+Repository = "https://github.com/almostordinary/pnuke"
+Issues = "https://github.com/almostordinary/pnuke/issues"
+
+[tool.maturin]
+bindings = "bin"
+strip = true

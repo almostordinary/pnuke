@@ -1,0 +1,32 @@
+{
+  "name": "pnuke",
+  "version": "0.1.1",
+  "description": "⚡ The sub-millisecond port killer and listener cockpit for developers.",
+  "main": "bin/pnuke.js",
+  "bin": {
+    "pnuke": "bin/pnuke.js"
+  },
+  "scripts": {
+    "postinstall": "node scripts/install.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/almostordinary/pnuke.git"
+  },
+  "keywords": [
+    "cli",
+    "port",
+    "kill",
+    "tui",
+    "network",
+    "developer-tools",
+    "vite",
+    "next"
+  ],
+  "author": "Almost Ordinary <hello@almostordinary.dev>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/almostordinary/pnuke/issues"
+  },
+  "homepage": "https://github.com/almostordinary/pnuke#readme"
+}

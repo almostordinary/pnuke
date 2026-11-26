@@ -23,3 +23,14 @@ serde_json = "1.0.154"
 
 [target.'cfg(not(unix))'.dependencies]
 sysinfo = "0.40.4"
+
+[package.metadata.deb]
+maintainer = "Parth Gorde <parth@almostordinary.dev>"
+copyright = "2026, Almost Ordinary"
+extended-description = """\
+⚡ pnuke is an ultra-fast CLI tool to instantly find and terminate processes locking development ports."""
+section = "utils"
+priority = "optional"
+assets = [
+    ["target/release/pnuke", "usr/bin/pnuke", "755"],
+]
