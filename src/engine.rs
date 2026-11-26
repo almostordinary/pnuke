@@ -45,15 +45,59 @@ pub fn get_all_listeners() -> Result<Vec<ProcessInfo>, String> {
 }
 
 /// Finds all listening processes for a specific port.
+/// Uses fast-path targeted lookup first, falling back to full scan if needed.
 pub fn find_processes_on_port(target_port: u16) -> Result<Vec<ProcessInfo>, String> {
+    let mut matches = Vec::new();
+    let mut found_fast = false;
+
+    // Fast path: query targeted TCP socket
+    if let Ok(p) = listeners::get_process_by_port(target_port, listeners::Protocol::TCP) {
+        matches.push(ProcessInfo {
+            pid: p.pid,
+            name: if p.name.is_empty() {
+                "unknown".to_string()
+            } else {
+                p.name
+            },
+            path: p.path,
+            port: target_port,
+            protocol: "TCP".to_string(),
+            ip: "0.0.0.0".to_string(),
+        });
+        found_fast = true;
+    }
+
+    // Fast path: query targeted UDP socket
+    if let Ok(p) = listeners::get_process_by_port(target_port, listeners::Protocol::UDP) {
+        matches.push(ProcessInfo {
+            pid: p.pid,
+            name: if p.name.is_empty() {
+                "unknown".to_string()
+            } else {
+                p.name
+            },
+            path: p.path,
+            port: target_port,
+            protocol: "UDP".to_string(),
+            ip: "0.0.0.0".to_string(),
+        });
+        found_fast = true;
+    }
+
+    if found_fast {
+        return Ok(matches);
+    }
+
+    // Fallback path: inspect full system listener table
     let all = get_all_listeners()?;
-    let matches: Vec<ProcessInfo> = all.into_iter().filter(|p| p.port == target_port).collect();
-    Ok(matches)
+    let fallback_matches: Vec<ProcessInfo> =
+        all.into_iter().filter(|p| p.port == target_port).collect();
+    Ok(fallback_matches)
 }
 
 /// Terminates a process by its PID.
-/// On Unix, it sends SIGTERM first, waits up to 100ms, and escalates to SIGKILL if still alive.
-/// If `force` is true, it sends SIGKILL immediately.
+/// On Unix, it sends SIGTERM, checks immediately, and uses microsecond-level adaptive polling (50µs)
+/// before falling back to SIGKILL. If `force` is true, sends SIGKILL immediately (~0.02ms).
 #[cfg(unix)]
 pub fn terminate_pid(pid: u32, force: bool) -> Result<(), String> {
     unsafe {
@@ -77,7 +121,7 @@ pub fn terminate_pid(pid: u32, force: bool) -> Result<(), String> {
             }
         }
 
-        // Graceful termination: SIGTERM first
+        // Graceful termination: send SIGTERM
         if libc::kill(pid as libc::pid_t, libc::SIGTERM) != 0 {
             return Err(format!(
                 "Failed to send SIGTERM to process {}: {}",
@@ -86,15 +130,29 @@ pub fn terminate_pid(pid: u32, force: bool) -> Result<(), String> {
             ));
         }
 
-        // Wait up to 100ms for clean termination
-        for _ in 0..10 {
-            std::thread::sleep(std::time::Duration::from_millis(10));
+        // Immediate check: did the process terminate right away?
+        if libc::kill(pid as libc::pid_t, 0) != 0 {
+            return Ok(());
+        }
+
+        // Adaptive microsecond polling: start at 50µs (0.05ms), double up to 500µs, total max 15ms
+        let mut sleep_micros = 50u64;
+        let mut total_slept = 0u64;
+
+        while total_slept < 15_000 {
+            std::thread::sleep(std::time::Duration::from_micros(sleep_micros));
+            total_slept += sleep_micros;
+
             if libc::kill(pid as libc::pid_t, 0) != 0 {
-                return Ok(()); // Process exited cleanly
+                return Ok(()); // Terminated cleanly
+            }
+
+            if sleep_micros < 500 {
+                sleep_micros *= 2;
             }
         }
 
-        // Still alive after 100ms: escalate to SIGKILL
+        // If still alive after 15ms, escalate to instant SIGKILL
         if libc::kill(pid as libc::pid_t, libc::SIGKILL) == 0 {
             Ok(())
         } else {
@@ -197,7 +255,6 @@ mod tests {
 
     #[test]
     fn test_nuke_nonexistent_port() {
-        // Port 65534 is unlikely to be listening during test
         let results = nuke_port(65534, false);
         assert_eq!(results.len(), 1);
         assert!(!results[0].success);

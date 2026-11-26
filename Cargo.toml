@@ -1,6 +1,6 @@
 [package]
 name = "pnuke"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 authors = ["Almost Ordinary <hello@almostordinary.dev>", "Parth Gorde <parth@almostordinary.dev>"]
 description = "⚡ The sub-millisecond port killer and listener cockpit for developers."
