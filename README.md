@@ -46,7 +46,11 @@ Or you install heavy npm packages that pull in 15 dependencies and take 400ms ju
 ## ⚡ Features
 
 * **Blazingly Fast:** Executes in sub-milliseconds with a tiny **~1.8MB** static binary.
+* **Framework & Service Aliases:** Nuke by name instead of remembering port numbers: `pnuke vite`, `pnuke next`, `pnuke postgres`, `pnuke redis`.
+* **Port Range Support:** Clear batches of incremented ports in one command: `pnuke 3000..3005`.
 * **Interactive TUI Cockpit:** Run `pnuke` without arguments to launch a real-time, searchable terminal dashboard powered by [Ratatui](https://ratatui.rs).
+* **Safety Shields:** Automatically guards critical system ports (SSH 22, DNS 53) from accidental termination unless `--danger` is specified.
+* **Shell Auto-Completions:** Built-in completion generators for Bash, Zsh, Fish, and PowerShell (`pnuke --generate-completion zsh`).
 * **Multi-Port Support:** Nuke multiple ports simultaneously: `pnuke 3000 8080 5432`.
 * **Graceful & Force Modes:** Sends `SIGTERM` first with a 100ms graceful exit window, or instant `SIGKILL` with `-f` / `--force`.
 * **Agent & Automation Friendly:** `--json` output flag allows seamless integration into CI pipelines, scripts, and AI agents.
@@ -102,39 +106,67 @@ curl -fsSL https://raw.githubusercontent.com/almostordinary/pnuke/main/install.s
 ## 📖 CLI Usage
 
 ```
-Usage: pnuke [OPTIONS] [PORTS]...
+Usage: pnuke [OPTIONS] [TARGETS]...
 
 Arguments:
-  [PORTS]...  Port(s) to inspect or nuke (e.g. 3000, 8080, 5432)
+  [TARGETS]...  Port(s), aliases (e.g. 'vite', 'next'), or ranges (e.g. '3000..3005')
 
 Options:
-  -f, --force        Force immediate termination (SIGKILL) without grace period
-  -c, --check        Check and inspect what is running without terminating
-  -l, --list         Non-interactively list all active listening ports
-  -i, --interactive  Explicitly launch the interactive terminal UI
-      --json         Output results as machine-readable JSON
-  -q, --quiet        Suppress all informational output except errors
-  -h, --help         Print help
-  -V, --version      Print version
+  -f, --force                 Force immediate termination (SIGKILL) without grace period
+  -c, --check                 Check and inspect what is running without terminating
+  -l, --list                  Non-interactively list all active listening ports
+  -i, --interactive           Explicitly launch the interactive terminal UI
+      --aliases               List all supported framework and service aliases
+      --danger                Allow terminating protected system ports (e.g. port 22 SSH)
+      --generate-completion   Generate shell completions (bash, zsh, fish, powershell)
+      --json                  Output results as machine-readable JSON
+  -q, --quiet                 Suppress all informational output except errors
+  -h, --help                  Print help
+  -V, --version               Print version
 ```
 
 ### Examples
 
-#### 1. Instant Kill
+#### 1. Instant Kill (by Port or Alias)
 ```bash
+# By port number:
 pnuke 3000
-# Output: ✔ Nuked 'node' (PID: 14205) on port 3000 in 0.82ms
+
+# By framework or database alias:
+pnuke vite          # targets port 5173
+pnuke next          # targets port 3000
+pnuke postgres      # targets port 5432
+pnuke redis         # targets port 6379
 ```
 
-#### 2. Nuke Multiple Ports at Once
+#### 2. Kill a Range of Ports
 ```bash
-pnuke 3000 8080 5432
+pnuke 3000..3005
 ```
 
-#### 3. Inspect / Dry-Run (Check without killing)
+#### 3. Nuke Multiple Ports & Aliases at Once
 ```bash
-pnuke -c 3000
-# Output: ● Port 3000 is occupied by 'node' (PID: 14205, Protocol: TCP)
+pnuke vite next 8080 5432
+```
+
+#### 4. Inspect / Dry-Run (Check without killing)
+```bash
+pnuke -c vite
+# Output: ● Port 5173 is occupied by 'vite' (PID: 14205, Protocol: TCP)
+```
+
+#### 5. List All Supported Aliases
+```bash
+pnuke --aliases
+```
+
+#### 6. Generate Shell Completions
+```bash
+# For Zsh:
+pnuke --generate-completion zsh > ~/.zfunc/_pnuke
+
+# For Bash:
+pnuke --generate-completion bash > /etc/bash_completion.d/pnuke
 ```
 
 #### 4. Non-Interactive List
