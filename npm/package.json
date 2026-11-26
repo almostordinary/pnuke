@@ -9,6 +9,11 @@
   "scripts": {
     "postinstall": "node scripts/install.js"
   },
+  "files": [
+    "bin",
+    "scripts",
+    "README.md"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/almostordinary/pnuke.git"

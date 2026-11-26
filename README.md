@@ -104,30 +104,12 @@ bun add -g pnuke
 
 ### 🐍 uv & pip (Python)
 ```bash
-# Run instantly via uv:
+# Run instantly with zero install:
 uvx pnuke 3000
 
 # Or install tool:
 uv tool install pnuke
 pip install pnuke
-```
-
-### 🐧 Arch Linux (pacman / AUR)
-```bash
-yay -S pnuke-bin
-# or
-paru -S pnuke-bin
-```
-
-### 🐧 Debian / Ubuntu (.deb)
-Download the `.deb` package from [GitHub Releases](https://github.com/almostordinary/pnuke/releases):
-```bash
-sudo apt install ./pnuke_amd64.deb
-```
-
-### ⚡ One-Liner (macOS & Linux)
-```bash
-curl -fsSL https://raw.githubusercontent.com/almostordinary/pnuke/main/install.sh | sh
 ```
 
 ---
