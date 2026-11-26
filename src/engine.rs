@@ -110,7 +110,7 @@ pub fn terminate_pid(pid: u32, force: bool) -> Result<(), String> {
 /// Cross-platform termination for non-Unix (e.g. Windows).
 #[cfg(not(unix))]
 pub fn terminate_pid(pid: u32, _force: bool) -> Result<(), String> {
-    let mut sys = sysinfo::System::new();
+    let mut sys = sysinfo::System::new().map_err(|e| format!("Failed to initialize system info: {e}"))?;
     let sys_pid = sysinfo::Pid::from_u32(pid);
     sys.refresh_processes(sysinfo::ProcessesToUpdate::Some(&[sys_pid]), true);
 
