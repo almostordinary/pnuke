@@ -1,6 +1,6 @@
 {
   "name": "pnuke",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "⚡ The sub-millisecond port killer and listener cockpit for developers.",
   "main": "bin/pnuke.js",
   "bin": {
